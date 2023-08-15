@@ -3,16 +3,15 @@ const app = express()
 
 
 app.set('view engine', 'ejs');
+var path = require('path')
+app.use(express.static(path.join(__dirname, 'public')));
 
-app.get("/:nome/:leng", (req, res) => {
-    var exibirMsg = true
-    res.render("index", {
-        nome: req.params.nome,
-        leng: req.params.leng,
-        empresa: "Flamboyant",
-        saldo: 100000000,
-        msg: exibirMsg
-    })
+app.get("/", (req, res) => {
+    res.render("index")
+})
+
+app.get("/perguntar", (req, res) => {
+    res.render("perguntar")
 })
 
 app.listen(1206), () => {
