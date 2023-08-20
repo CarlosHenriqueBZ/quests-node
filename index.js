@@ -1,6 +1,16 @@
 const express = require('express')
 const bodyParser = require('body-parser')
 const app = express()
+const connection = require("./database/database")
+const questionsDB = require("./database/Question")
+
+//database
+
+connection.authenticate().then(() => {
+    console.log("Conectado")
+}).catch((msgErro) => {
+    console.log(msgErro)
+})
 
 
 app.set('view engine', 'ejs');
@@ -12,7 +22,15 @@ app.use(bodyParser.json())
 
 
 app.get("/", (req, res) => {
-    res.render("index")
+    questionsDB.findAll({
+        raw: true, order: [
+            ['id', 'DESC']
+        ]
+    }).then( questions => {
+        res.render("index", {
+            questions
+        })
+    })
 })
 
 app.get("/ask", (req, res) => {
@@ -22,8 +40,12 @@ app.get("/ask", (req, res) => {
 app.post("/save", (req, res) => {
    var title = req.body.title
    var desc = req.body.desc
-
-    res.send("Titulo" + title + " " + "Desc" + " " + desc)
+   questionsDB.create({
+    title: title,
+    description: desc,
+   }).then(() => {
+    res.redirect('/');
+   })
 })
 
 app.listen(1206), () => {
